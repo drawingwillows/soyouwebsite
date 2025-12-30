@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So You - Discover Your Passion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #2C3E50;
+            background: #F8F9FA;
+            padding-bottom: 80px;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+            body.sidebar-collapsed {
+                margin-left: 60px;
+            }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+
+            .sidebar.collapsed {
+                width: 60px;
+            }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #E9ECEF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #1A1A1A;
+            white-space: nowrap;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6C757D;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+            .sidebar-toggle:hover {
+                background: #F8F9FA;
+            }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #6C757D;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #2C3E50;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+            .sidebar-link:hover {
+                background: #F8F9FA;
+                color: #6B7FD7;
+            }
+
+            .sidebar-link.active {
+                background: #6B7FD7;
+                color: white;
+            }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-text {
+            flex: 1;
+        }
+
+        .collapsed .sidebar-text,
+        .collapsed .sidebar-section-title,
+        .collapsed .sidebar-logo {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .collapsed .sidebar-link {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        .collapsed .sidebar-icon {
+            margin-right: 0;
+        }
+
+        /* Accessibility Controls */
+        .accessibility-controls {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            z-index: 999;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            transition: left 0.3s ease;
+        }
+
+        body.sidebar-collapsed .accessibility-controls {
+            left: 80px;
+        }
+
+        .control-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #6B7FD7;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+            .control-btn:last-child {
+                margin-bottom: 0;
+            }
+
+            .control-btn:hover {
+                transform: scale(1.05);
+                background: #5a6bc5;
+            }
+
+            .control-btn:focus {
+                outline: 3px solid #6B7FD7;
+                outline-offset: 3px;
+            }
+
+        /* Hero Section - Intentional WCAG Break */
+        .hero {
+            background: #1A1A1A;
+            width: 100%;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+            .hero h1 {
+                font-family: 'Raleway', sans-serif;
+                font-weight: 800;
+                font-size: clamp(4rem, 12vw, 8rem);
+                color: #FFFFFF;
+                letter-spacing: 0.05em;
+                margin: 0;
+                opacity: 0;
+                animation: fadeIn 2s ease-in forwards;
+            }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hero-line {
+            width: 80%;
+            max-width: 600px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 1rem auto 0;
+        }
+
+        /* Standard Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 5rem 0;
+        }
+
+            .section.first {
+                padding-top: 4rem;
+            }
+
+        /* Typography */
+        h2 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #1A1A1A;
+        }
+
+        h3 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2C3E50;
+        }
+
+        .subheading {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #6C757D;
+            margin-bottom: 2rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+            ul li {
+                margin-bottom: 1rem;
+                padding-left: 1.5rem;
+                position: relative;
+            }
+
+                ul li:before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: #6B7FD7;
+                    font-weight: bold;
+                }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #6B7FD7 0%, #A8B5E8 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 24px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(107, 127, 215, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+            .btn:hover {
+                transform: scale(1.02);
+                box-shadow: 0 4px 12px rgba(107, 127, 215, 0.4);
+            }
+
+            .btn:focus {
+                outline: 3px solid #6B7FD7;
+                outline-offset: 3px;
+            }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* App Embed Container */
+        .app-embed {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 3rem 0;
+            min-height: 600px;
+        }
+
+            .app-embed iframe {
+                width: 100%;
+                height: 600px;
+                border: none;
+                border-radius: 12px;
+            }
+
+        /* Document Links */
+        .doc-link {
+            display: block;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            color: #2C3E50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .doc-link:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .doc-link h3 {
+                margin-bottom: 0.5rem;
+            }
+
+            .doc-link p {
+                margin: 0;
+                color: #6C757D;
+                font-size: 0.9rem;
+            }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 280px;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            z-index: 998;
+            transition: left 0.3s ease;
+        }
+
+        body.sidebar-collapsed .bottom-nav {
+            left: 60px;
+        }
+
+        .bottom-nav nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-nav a {
+            text-decoration: none;
+            color: #6C757D;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+            .bottom-nav a:hover,
+            .bottom-nav a.active {
+                background: #6B7FD7;
+                color: white;
+            }
+
+            .bottom-nav a:focus {
+                outline: 3px solid #6B7FD7;
+                outline-offset: 3px;
+            }
+
+        /* Page Sections */
+        .page {
+            display: none;
+        }
+
+            .page.active {
+                display: block;
+            }
+
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+            .login-box h2 {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: #2C3E50;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #E9ECEF;
+                border-radius: 12px;
+                font-size: 1rem;
+                transition: border-color 0.2s;
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #6B7FD7;
+                }
+
+        /* Accessibility cards */
+        .accessibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .accessibility-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+            .accessibility-card h3 {
+                color: #6B7FD7;
+                margin-bottom: 1rem;
+            }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .feedback-box {
+            background: #F8F9FA;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #E9ECEF;
+        }
+
+            .language-selector select {
+                width: 100%;
+                padding: 0.75rem;
+                border: 2px solid #E9ECEF;
+                border-radius: 12px;
+                font-size: 1rem;
+                background: white;
+                cursor: pointer;
+            }
+
+        /* Virtual Keyboard */
+        .virtual-keyboard {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            max-width: 800px;
+            width: 90%;
+        }
+
+            .virtual-keyboard.active {
+                display: block;
+            }
+
+        .keyboard-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            justify-content: center;
+        }
+
+        .keyboard-key {
+            padding: 1rem;
+            background: #F8F9FA;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            min-width: 50px;
+            transition: background 0.2s;
+        }
+
+            .keyboard-key:hover {
+                background: #E9ECEF;
+            }
+
+            .keyboard-key.space {
+                flex: 1;
+            }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                margin-left: 0;
+                padding-top: 60px;
+            }
+
+                body.sidebar-collapsed {
+                    margin-left: 0;
+                }
+
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                bottom: auto;
+            }
+
+                .sidebar.collapsed {
+                    width: 100%;
+                }
+
+            .sidebar-header {
+                padding: 1rem;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0;
+            }
+
+            .sidebar-section {
+                margin: 0;
+                display: flex;
+            }
+
+            .sidebar-section-title {
+                display: none;
+            }
+
+            .bottom-nav {
+                left: 0;
+            }
+
+            body.sidebar-collapsed .bottom-nav {
+                left: 0;
+            }
+
+            .accessibility-controls {
+                bottom: 100px;
+                left: 10px;
+            }
+
+            body.sidebar-collapsed .accessibility-controls {
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">SO YOU</div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                <span id="toggleIcon">←</span>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="#" class="sidebar-link active" data-page="home">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="sidebar-text">Home</span>
+                </a>
+                <a href="#" class="sidebar-link" data-page="prototype">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span class="sidebar-text">Prototype</span>
+                </a>
+                <a href="#" class="sidebar-link" data-page="about">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="sidebar-text">About</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Resources</div>
+                <a href="#" class="sidebar-link" data-page="documents">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="sidebar-text">Documents</span>
+                </a>
+                <a href="#" class="sidebar-link" data-page="accessibility">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span class="sidebar-text">Accessibility</span>
+                </a>
+                <a href="#" class="sidebar-link" data-page="sources">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span class="sidebar-text">Sources</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="language-selector">
+            <select id="languageSelect" aria-label="Select language">
+                <option value="en">English</option>
+                <option value="nl">Nederlands</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+            </select>
+        </div>
+    </aside>
+
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls">
+        <button class="control-btn" id="ttsBtn" aria-label="Text to speech" title="Text to Speech">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+        </button>
+        <button class="control-btn" id="keyboardBtn" aria-label="Virtual keyboard" title="Virtual Keyboard">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        </button>
+        <button class="control-btn" id="loginBtn" aria-label="Login" title="Login">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Virtual Keyboard -->
+    <div class="virtual-keyboard" id="virtualKeyboard">
+        <div class="keyboard-row">
+            <button class="keyboard-key">Q</button>
+            <button class="keyboard-key">W</button>
+            <button class="keyboard-key">E</button>
+            <button class="keyboard-key">R</button>
+            <button class="keyboard-key">T</button>
+            <button class="keyboard-key">Y</button>
+            <button class="keyboard-key">U</button>
+            <button class="keyboard-key">I</button>
+            <button class="keyboard-key">O</button>
+            <button class="keyboard-key">P</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key">A</button>
+            <button class="keyboard-key">S</button>
+            <button class="keyboard-key">D</button>
+            <button class="keyboard-key">F</button>
+            <button class="keyboard-key">G</button>
+            <button class="keyboard-key">H</button>
+            <button class="keyboard-key">J</button>
+            <button class="keyboard-key">K</button>
+            <button class="keyboard-key">L</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key">Z</button>
+            <button class="keyboard-key">X</button>
+            <button class="keyboard-key">C</button>
+            <button class="keyboard-key">V</button>
+            <button class="keyboard-key">B</button>
+            <button class="keyboard-key">N</button>
+            <button class="keyboard-key">M</button>
+            <button class="keyboard-key">⌫</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key space">Space</button>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page" id="login">
+        <div class="login-container">
+            <div class="login-box">
+                <h2>Login to So You</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Page -->
+    <div class="page active" id="home">
+        <div class="hero">
+            <h1>SO YOU</h1>
+            <div class="hero-line"></div>
+        </div>
+
+        <div class="container">
+            <section class="section first">
+                <p class="subheading">Discover what energizes you—and find your place in Ghent's student community.</p>
+                <p>So You is a prototype app designed to help students from UGent, Artevelde, and HOGENT explore their passions and connect with student associations that match their interests. Whether you're curious about tech, sports, culture, activism, or something entirely different, So You helps you discover what excites you and where you belong.</p>
+                <a href="#" class="btn" data-page="prototype">→ Try the Prototype</a>
+            </section>
+
+            <section class="section">
+                <h2>Built for You</h2>
+                <p>We know that finding the right association can feel overwhelming. So You is designed with intention:</p>
+                <ul>
+                    <li><strong>Clear navigation</strong> — A bottom bar that stays put, so you always know where you are</li>
+                    <li><strong>Generous spacing</strong> — Room to breathe between every element</li>
+                    <li><strong>Calm aesthetics</strong> — Soft colors, rounded edges, and no visual clutter</li>
+                    <li><strong>Neurodivergent-friendly</strong> — Created with ADHD, autism, and sensory sensitivities in mind</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>What You Can Do</h2>
+                <div class="features">
+                    <div class="feature">
+                        <h3>Explore Your Interests</h3>
+                        <p>Discover what genuinely excites and energizes you through guided exploration.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Find Your Match</h3>
+                        <p>Connect with student associations across UGent, Artevelde, and HOGENT that align with your passions and curiosities.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Discover Patterns</h3>
+                        <p>See themes emerge in what you're drawn to—helping you understand yourself better.</p>
