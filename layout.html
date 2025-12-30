@@ -818,22 +818,7 @@
         </button>
     </div>
 
-    <!-- Virtual Keyboard (dynamic) -->
-    <div class="virtual-keyboard" id="virtualKeyboard" aria-hidden="true">
-        <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:8px">
-            <button id="vkMinus" class="btn" title="Smaller keyboard">-</button>
-            <div style="color:#6C757D">Keyboard scale</div>
-            <button id="vkPlus" class="btn" title="Bigger keyboard">+</button>
-            <div style="width:12px"></div>
-            <label for="vkLayout" style="color:#6C757D">Layout</label>
-            <select id="vkLayout" aria-label="Choose keyboard layout">
-                <option value="qwerty">QWERTY</option>
-                <option value="azerty">AZERTY</option>
-                <option value="dvorak">DVORAK</option>
-            </select>
-        </div>
-        <div id="vkKeys"></div>
-    </div>
+    <!-- Virtual keyboard removed -->
 
     <!-- Login Page -->
     <div class="page" id="login">
@@ -1038,121 +1023,7 @@
             var icon = $('#toggleIcon'); if(icon) icon.textContent = sidebar.classList.contains('collapsed') ? '→' : '←';
         });
 
-        // Virtual keyboard toggle and dynamic keyboard handling (persisted)
-        var vk = $('#virtualKeyboard');
-        var keyboardBtn = $('#keyboardBtn');
-        var vkKeys = $('#vkKeys');
-        var vkLayoutSel = $('#vkLayout');
-        var vkPlus = $('#vkPlus');
-        var vkMinus = $('#vkMinus');
-
-        var VK_LAYOUTS = {
-            qwerty: [
-                ['`','1','2','3','4','5','6','7','8','9','0','-','=','Backspace'],
-                ['Tab','q','w','e','r','t','y','u','i','o','p','[',']','\\'],
-                ['Caps','a','s','d','f','g','h','j','k','l',';','\'','Enter'],
-                ['Shift','z','x','c','v','b','n','m',',','.','/','Shift'],
-                ['Space']
-            ],
-            azerty: [
-                ['²','&','é','"','\'','(','-','è','_','ç','à',')','=','Backspace'],
-                ['Tab','a','z','e','r','t','y','u','i','o','p','^','$','*'],
-                ['Caps','q','s','d','f','g','h','j','k','l','m','ù','Enter'],
-                ['Shift','<','w','x','c','v','b','n',',',';',':','!','Shift'],
-                ['Space']
-            ],
-            dvorak: [
-                ['`','1','2','3','4','5','6','7','8','9','0','[',']','Backspace'],
-                ['Tab','\'',',','.','p','y','f','g','c','r','l','/','=','\\'],
-                ['Caps','a','o','e','u','i','d','h','t','n','s','-','Enter'],
-                ['Shift',';','q','j','k','x','b','m',',','.','/','Shift'],
-                ['Space']
-            ]
-        };
-
-        function getVKSetting(key, fallback){ try{ var v = localStorage.getItem(key); return v===null?fallback:v }catch(e){return fallback} }
-        var vkScale = parseFloat(getVKSetting('vk_scale', '1')) || 1;
-        var vkLayout = getVKSetting('vk_layout','qwerty') || 'qwerty';
-
-        function renderVK(){
-            vkKeys.innerHTML = '';
-            var rows = VK_LAYOUTS[vkLayout] || VK_LAYOUTS.qwerty;
-            rows.forEach(function(row){
-                var r = document.createElement('div'); r.className = 'keyboard-row';
-                row.forEach(function(k){
-                    var btn = document.createElement('button'); btn.className = 'keyboard-key';
-                    btn.textContent = k==='Space' ? 'Space' : k;
-                    if(k==='Space') btn.classList.add('space');
-                    btn.addEventListener('click', function(){ sendKey(k); });
-                    r.appendChild(btn);
-                });
-                vkKeys.appendChild(r);
-            });
-            if(vk){ vk.style.transform = 'scale(' + vkScale + ')'; }
-        }
-
-        function sendKey(k){
-            var active = document.activeElement; if(!active) return;
-            if(k==='Backspace' || k==='⌫'){ if(active.value!==undefined) active.value = active.value.slice(0,-1); active.focus(); return; }
-            if(k==='Tab'){ if(active.value!==undefined){ active.value += '\t'; active.focus(); } return; }
-            if(k==='Enter'){ if(active.tagName==='TEXTAREA') { active.value += '\n'; active.focus(); } else { active.form && active.form.requestSubmit && active.form.requestSubmit(); } return; }
-            if(k==='Space'){ if(active.value!==undefined) active.value += ' '; active.focus(); return; }
-            // default: insert character
-            if(active.value!==undefined){ active.value += k; active.focus(); }
-        }
-
-        keyboardBtn && keyboardBtn.addEventListener('click', function(){
-            if(!vk) return;
-            var active = vk.classList.toggle('active');
-            try{ localStorage.setItem('soyou_vk', active ? '1' : '0'); }catch(e){}
-        });
-
-        vkLayoutSel && (vkLayoutSel.value = vkLayout);
-        vkLayoutSel && vkLayoutSel.addEventListener('change', function(){ vkLayout = this.value; try{ localStorage.setItem('vk_layout', vkLayout); }catch(e){} renderVK(); });
-        vkPlus && vkPlus.addEventListener('click', function(){ vkScale = Math.min(1.5, +(vkScale + 0.1).toFixed(2)); try{ localStorage.setItem('vk_scale', String(vkScale)); }catch(e){} renderVK(); });
-        vkMinus && vkMinus.addEventListener('click', function(){ vkScale = Math.max(0.6, +(vkScale - 0.1).toFixed(2)); try{ localStorage.setItem('vk_scale', String(vkScale)); }catch(e){} renderVK(); });
-
-        // initialize
-        renderVK();
-
-        // Make virtual keyboard draggable and remember position
-        (function(){
-            var dragEl = vk; if(!dragEl) return;
-            var dragging = false, dragOffset = {x:0,y:0};
-            // restore position
-            try{
-                var pos = JSON.parse(localStorage.getItem('vk_pos')||'null');
-                if(pos && typeof pos.left==='number' && typeof pos.top==='number'){
-                    dragEl.style.left = (pos.left) + 'px';
-                    dragEl.style.top = (pos.top) + 'px';
-                    dragEl.style.transform = 'none';
-                }
-            }catch(e){}
-
-            dragEl.addEventListener('pointerdown', function(e){
-                // don't start drag when clicking a key
-                if(e.target.closest && e.target.closest('.keyboard-key')) return;
-                dragging = true; dragEl.setPointerCapture && dragEl.setPointerCapture(e.pointerId);
-                var r = dragEl.getBoundingClientRect(); dragOffset.x = e.clientX - r.left; dragOffset.y = e.clientY - r.top;
-                dragEl.style.transition = 'none';
-            });
-
-            document.addEventListener('pointermove', function(e){
-                if(!dragging) return;
-                var left = e.clientX - dragOffset.x; var top = e.clientY - dragOffset.y;
-                // clamp
-                left = Math.max(8, Math.min(window.innerWidth - dragEl.offsetWidth - 8, left));
-                top = Math.max(8, Math.min(window.innerHeight - dragEl.offsetHeight - 8, top));
-                dragEl.style.left = left + 'px'; dragEl.style.top = top + 'px'; dragEl.style.transform = 'none';
-            });
-
-            document.addEventListener('pointerup', function(e){
-                if(!dragging) return; dragging = false;
-                try{ localStorage.setItem('vk_pos', JSON.stringify({ left: parseInt(dragEl.style.left,10)||0, top: parseInt(dragEl.style.top,10)||0 })); }catch(er){}
-                try{ dragEl.releasePointerCapture && dragEl.releasePointerCapture(e.pointerId); }catch(_){}
-                dragEl.style.transition = '';
-            });
-        })();
+        // Virtual keyboard removed from this layout to simplify client scripts
 
         // TTS: start/stop reading visible page main text
         var ttsBtn = $('#ttsBtn');

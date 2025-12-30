@@ -1,80 +1,149 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './vk.css'
 
-const LAYOUTS = {
-  qwerty: [
-    ['1','2','3','4','5','6','7','8','9','0','-','=', 'Backspace'],
-    ['q','w','e','r','t','y','u','i','o','p','[',']','\\'],
-    ['a','s','d','f','g','h','j','k','l',';','\'', 'Enter'],
-    ['z','x','c','v','b','n','m',',','.','/'],
-    ['Space']
+const PHYSICAL_KEY_MAP = {
+  QWERTY: {
+    'KeyQ':'Q','KeyW':'W','KeyE':'E','KeyR':'R','KeyT':'T','KeyY':'Y','KeyU':'U','KeyI':'I','KeyO':'O','KeyP':'P',
+    'KeyA':'A','KeyS':'S','KeyD':'D','KeyF':'F','KeyG':'G','KeyH':'H','KeyJ':'J','KeyK':'K','KeyL':'L',
+    'KeyZ':'Z','KeyX':'X','KeyC':'C','KeyV':'V','KeyB':'B','KeyN':'N','KeyM':'M','Space':' ','Backspace':'BACKSPACE','Enter':'ENTER'
+  },
+  AZERTY: {
+    'KeyQ':'A','KeyW':'Z','KeyE':'E','KeyR':'R','KeyT':'T','KeyY':'Y','KeyU':'U','KeyI':'I','KeyO':'O','KeyP':'P',
+    'KeyA':'Q','KeyS':'S','KeyD':'D','KeyF':'F','KeyG':'G','KeyH':'H','KeyJ':'J','KeyK':'K','KeyL':'L',
+    'KeyZ':'W','KeyX':'X','KeyC':'C','KeyV':'V','KeyB':'B','KeyN':'N','KeyM':'M','Space':' ','Backspace':'BACKSPACE','Enter':'ENTER'
+  },
+  QWERTZ: {
+    'KeyQ':'Q','KeyW':'W','KeyE':'E','KeyR':'R','KeyT':'T','KeyY':'Z','KeyU':'U','KeyI':'I','KeyO':'O','KeyP':'P',
+    'KeyA':'A','KeyS':'S','KeyD':'D','KeyF':'F','KeyG':'G','KeyH':'H','KeyJ':'J','KeyK':'K','KeyL':'L',
+    'KeyZ':'Y','KeyX':'X','KeyC':'C','KeyV':'V','KeyB':'B','KeyN':'N','KeyM':'M','Space':' ','Backspace':'BACKSPACE','Enter':'ENTER'
+  }
+}
+
+const LAYOUT_DEFINITIONS = {
+  AZERTY: [
+    ['A','Z','E','R','T','Y','U','I','O','P'],
+    ['Q','S','D','F','G','H','J','K','L','M'],
+    ['W','X','C','V','B','N','É','À','Ç']
   ],
-  azerty: [
-    ['&','\u00e9','\"','\'','(','-','\u00e8','_','\u00e7','\u00e0',')','=','Backspace'],
-    ['a','z','e','r','t','y','u','i','o','p','^','$','*'],
-    ['q','s','d','f','g','h','j','k','l','m','Enter'],
-    ['<','w','x','c','v','b','n',',',';',':','!'],
-    ['Space']
+  QWERTY: [
+    ['Q','W','E','R','T','Y','U','I','O','P'],
+    ['A','S','D','F','G','H','J','K','L'],
+    ['Z','X','C','V','B','N','M']
+  ],
+  QWERTZ: [
+    ['Q','W','E','R','T','Z','U','I','O','P','Ü'],
+    ['A','S','D','F','G','H','J','K','L','Ö','Ä'],
+    ['Y','X','C','V','B','N','M','ẞ']
   ]
 }
 
-export default function VirtualKeyboard({ visible=true }){
-  const [layout, setLayout] = useState(localStorage.getItem('vk_layout') || 'qwerty')
-  const [scale, setScale] = useState(parseFloat(localStorage.getItem('vk_scale')) || 1)
+const getDefaultLayout = (lang) => {
+  if(lang==='fr') return 'AZERTY'
+  if(lang==='de') return 'QWERTZ'
+  return 'QWERTY'
+}
+
+export default function VirtualKeyboard({ visible=true, lang='en' }){
+  const [isOpen, setIsOpen] = useState(true)
+  const [isMinimized, setIsMinimized] = useState(false)
+  const [activeLayout, setActiveLayout] = useState(getDefaultLayout(lang))
+  const [pressedKey, setPressedKey] = useState(null)
+  const [scale, setScale] = useState(parseFloat(localStorage.getItem('vk_scale'))||1)
+  const [position, setPosition] = useState(() => { try{ return JSON.parse(localStorage.getItem('vk_pos')) || { x: 40, y: 120 } }catch(e){ return { x:40, y:120 } } })
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStartRef = useRef({ x:0, y:0 })
   const ref = useRef(null)
-  const dragging = useRef(false)
-  const offset = useRef({x:0,y:0})
 
-  useEffect(()=>{
-    localStorage.setItem('vk_layout', layout)
-  },[layout])
-  useEffect(()=>{
-    localStorage.setItem('vk_scale', String(scale))
-  },[scale])
+  useEffect(()=>{ setActiveLayout(getDefaultLayout(lang)) }, [lang])
 
-  useEffect(()=>{
-    // restore position
-    try{
-      const pos = JSON.parse(localStorage.getItem('app_vk_pos')||'null')
-      if(pos && ref.current){ ref.current.style.left = pos.left + 'px'; ref.current.style.top = pos.top + 'px'; ref.current.style.transform = 'none' }
-    }catch(e){}
-  },[])
+  useEffect(()=>{ try{ localStorage.setItem('vk_scale', String(scale)) }catch(e){} }, [scale])
+  useEffect(()=>{ try{ localStorage.setItem('vk_pos', JSON.stringify(position)) }catch(e){} }, [position])
+  useEffect(()=>{ try{ localStorage.setItem('vk_layout', activeLayout) }catch(e){} }, [activeLayout])
 
-  useEffect(()=>{
-    function onPointerMove(e){ if(!dragging.current) return; const el = ref.current; const left = e.clientX - offset.current.x; const top = e.clientY - offset.current.y; el.style.left = Math.max(8, Math.min(window.innerWidth - el.offsetWidth - 8, left)) + 'px'; el.style.top = Math.max(8, Math.min(window.innerHeight - el.offsetHeight - 8, top)) + 'px'; el.style.transform = 'none' }
-    function onPointerUp(e){ if(!dragging.current) return; dragging.current = false; try{ const el=ref.current; localStorage.setItem('app_vk_pos', JSON.stringify({ left: parseInt(el.style.left,10)||0, top: parseInt(el.style.top,10)||0 })); }catch(e){} }
-    window.addEventListener('pointermove', onPointerMove)
-    window.addEventListener('pointerup', onPointerUp)
-    return ()=>{ window.removeEventListener('pointermove', onPointerMove); window.removeEventListener('pointerup', onPointerUp) }
-  },[])
-
-  function onPointerDown(e){ if(e.target.closest && e.target.closest('.vk-key')) return; dragging.current = true; const r = ref.current.getBoundingClientRect(); offset.current.x = e.clientX - r.left; offset.current.y = e.clientY - r.top; }
-
-  function sendKey(k){ const active = document.activeElement; if(!active) return; if(k==='Backspace'){ if(active.value!==undefined) active.value = active.value.slice(0,-1); active.focus(); return } if(k==='Enter'){ if(active.tagName==='TEXTAREA'){ active.value += '\n'; } else { active.form && active.form.requestSubmit && active.form.requestSubmit(); } return } if(k==='Space'){ if(active.value!==undefined){ active.value += ' '; active.focus(); } return } if(active.value!==undefined){ active.value += k; active.focus() }
+  // dragging handlers
+  const handleMouseDown = (e) => {
+    if((e.target).closest && (e.target).closest('.vk-key')) return
+    setIsDragging(true)
+    dragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y }
   }
 
+  useEffect(()=>{
+    if(!isDragging) return
+    const onMove = (e)=>{
+      const x = e.clientX - dragStartRef.current.x
+      const y = e.clientY - dragStartRef.current.y
+      // clamp using visual size
+      const s = parseFloat(localStorage.getItem('vk_scale')||'1')||1
+      const el = ref.current
+      if(!el) return
+      const visualW = Math.round(el.offsetWidth * s)
+      const visualH = Math.round(el.offsetHeight * s)
+      const left = Math.max(8, Math.min(window.innerWidth - visualW - 8, x))
+      const top = Math.max(8, Math.min(window.innerHeight - visualH - 8, y))
+      setPosition({ x: left, y: top })
+    }
+    const onUp = ()=> setIsDragging(false)
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    return ()=>{ document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp) }
+  }, [isDragging])
+
+  // physical keyboard
+  useEffect(()=>{
+    const handler = (e)=>{
+      if(!isOpen) return
+      const map = PHYSICAL_KEY_MAP[activeLayout] || PHYSICAL_KEY_MAP.QWERTY
+      const m = map[e.code]
+      if(m){ if(m==='BACKSPACE' || m==='ENTER'){ e.preventDefault(); sendKey(m) } else { sendKey(m) } }
+    }
+    document.addEventListener('keydown', handler)
+    return ()=> document.removeEventListener('keydown', handler)
+  }, [isOpen, activeLayout])
+
+  const sendKey = (k)=>{
+    setPressedKey(k)
+    const active = document.activeElement
+    if(k==='BACKSPACE'){ if(active && active.value!==undefined) active.value = active.value.slice(0,-1); active && active.focus && active.focus(); }
+    else if(k==='ENTER'){ if(active && active.tagName==='TEXTAREA') active.value += '\n'; else active && active.form && active.form.requestSubmit && active.form.requestSubmit(); }
+    else if(k===' ' || k==='Space'){ if(active && active.value!==undefined) active.value += ' '; active && active.focus && active.focus(); }
+    else { if(active && active.value!==undefined) active.value += k; active && active.focus && active.focus(); }
+    setTimeout(()=>setPressedKey(null), 120)
+  }
+
+  const adjustScale = (delta)=> setScale(s=>{ const next = Math.min(1.5, Math.max(0.5, +(s+delta).toFixed(2))); try{ localStorage.setItem('vk_scale', String(next)) }catch(e){} return next })
+
   if(!visible) return null
+
+  const layout = LAYOUT_DEFINITIONS[activeLayout] || LAYOUT_DEFINITIONS.QWERTY
+
   return (
-    <div ref={ref} className="vk-container" onPointerDown={onPointerDown} style={{ transform:`scale(${scale})` }}>
-      <div className="vk-toolbar">
-        <div>Virtual Keyboard</div>
-        <div className="vk-controls">
-          <select value={layout} onChange={e=>setLayout(e.target.value)}>
-            <option value="qwerty">QWERTY</option>
-            <option value="azerty">AZERTY</option>
+    <div ref={ref} className="vk-container" style={{ position: 'fixed', left: position.x, top: position.y, transform: `scale(${scale})`, transformOrigin: 'top left', zIndex: 9999 }}>
+      <div className="vk-toolbar" onMouseDown={handleMouseDown} style={{ cursor: 'move', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{padding:'6px 8px', fontWeight:700}}>Virtual Keyboard</div>
+        <div style={{display:'flex', alignItems:'center', gap:8}}>
+          <label style={{fontSize:12}}>Layout</label>
+          <select value={activeLayout} onChange={e=>setActiveLayout(e.target.value)}>
+            <option value="AZERTY">AZERTY</option>
+            <option value="QWERTY">QWERTY</option>
+            <option value="QWERTZ">QWERTZ</option>
           </select>
-          <button onClick={()=>setScale(s=>Math.max(0.6, +(s-0.1).toFixed(2)))}>-</button>
-          <button onClick={()=>setScale(s=>Math.min(1.5, +(s+0.1).toFixed(2)))}>+</button>
+          <button onClick={()=>adjustScale(-0.1)} style={{padding:'6px 8px'}}>−</button>
+          <button onClick={()=>adjustScale(0.1)} style={{padding:'6px 8px'}}>+</button>
         </div>
       </div>
-      <div className="vk-keys">
-        {LAYOUTS[layout].map((row,i)=>(
-          <div key={i} className="vk-row">
-            {row.map((k,j)=>(
-              <button key={j} className="vk-key" onClick={()=>sendKey(k)}>{k==='Space'? '␣' : k}</button>
+      <div className="vk-keys" style={{padding:12}}>
+        {layout.map((row,i)=> (
+          <div key={i} className="vk-row" style={{display:'flex', justifyContent:'center', gap:8, marginBottom:8}}>
+            {row.map((k,j)=> (
+              <button key={j} className="vk-key" onClick={()=>sendKey(k)} style={{minWidth:40, padding:'10px 8px'}}>{k}</button>
             ))}
           </div>
         ))}
+        <div style={{display:'flex', justifyContent:'center', gap:12, marginTop:8}}>
+          <button onClick={()=>sendKey('BACKSPACE')} className="vk-key" style={{minWidth:80}}>Backspace</button>
+          <button onClick={()=>sendKey(' ')} className="vk-key" style={{minWidth:200}}>Space</button>
+          <button onClick={()=>sendKey('ENTER')} className="vk-key" style={{minWidth:80}}>Enter</button>
+        </div>
       </div>
     </div>
   )
