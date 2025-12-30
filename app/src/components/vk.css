@@ -1,0 +1,6 @@
+.vk-container{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#fff;padding:8px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:1000;max-width:900px;width:90%}
+.vk-toolbar{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #eef2ff}
+.vk-controls select{margin-right:8px}
+.vk-keys{padding:8px}
+.vk-row{display:flex;gap:6px;margin-bottom:6px;justify-content:center}
+.vk-key{padding:8px 12px;border-radius:8px;border:1px solid #eef2ff;background:#f8fafc;cursor:pointer}
