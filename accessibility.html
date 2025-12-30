@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Accessibility — So You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    html,body{margin:0;font-family:'Inter',sans-serif;background:#F8F9FA;color:#2C3E50}
+    .wrap{max-width:1100px;margin:3rem auto;padding:0 1.5rem}
+    h1{font-family:'Raleway',sans-serif}
+    .card{background:white;padding:1.5rem;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .note{color:#6C757D}
+    a.top{display:inline-block;margin-bottom:1rem;color:#6B7FD7;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="top" href="index.html" data-i18n="back_home">← Terug naar home</a>
+    <div class="card" role="region" aria-labelledby="accHeader">
+      <h1 id="accHeader" data-i18n="accessibility">Accessibility</h1>
+      <p class="note" data-i18n="placeholder_note">Hier kun je thema's, lettertypes en toetsenbordinstellingen kiezen en direct in de voorbeeldweergave bekijken.</p>
+
+      <h2 data-i18n="settings_button_title">Settings</h2>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem">
+        <label for="themeRange">Theme: <span id="themeLabel">Minimal</span></label>
+        <input id="themeRange" type="range" min="0" max="3" step="1" value="0" aria-valuetext="Minimal" />
+
+        <label for="fontSelect">Font</label>
+        <select id="fontSelect" aria-label="Choose site font">
+          <option value="Inter, system-ui, sans-serif">Inter (interface)</option>
+          <option value="'Roboto', system-ui, sans-serif">Roboto</option>
+          <option value="'Merriweather', serif">Merriweather (serif)</option>
+          <option value="'Open Sans', system-ui, sans-serif">Open Sans</option>
+        </select>
+
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <div>Virtual keyboard scale</div>
+          <button id="vkDec" class="btn">-</button>
+          <button id="vkInc" class="btn">+</button>
+          <div style="margin-left:0.5rem;color:#6C757D">(affects keyboard in header/footer preview)</div>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <label for="vkQ">QWERTY</label>
+          <input id="vkQ" type="radio" name="vkLayout" value="qwerty" />
+          <label for="vkA">AZERTY</label>
+          <input id="vkA" type="radio" name="vkLayout" value="azerty" />
+          <label for="vkD">DVORAK</label>
+          <input id="vkD" type="radio" name="vkLayout" value="dvorak" />
+        </div>
+
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <button id="toggleContrast" class="btn" data-i18n="contrast_label">Toggle contrast</button>
+          <button id="toggleTTS" class="btn" data-i18n="tts_label">Toggle TTS</button>
+          <button id="toggleVK" class="btn" data-i18n="virtual_keyboard_label">Toggle virtual keyboard</button>
+        </div>
+      </div>
+
+      <h2 style="margin-top:1.5rem">Preview</h2>
+      <p class="note">Gebruik de voorbeeldweergave om te zien hoe de site er met jouw instellingen uitziet. Wijzigingen worden opgeslagen en toegepast in het voorbeeld.</p>
+      <div style="margin-top:1rem">
+        <iframe id="previewFrame" src="layout.html" title="Live preview" style="width:100%;height:420px;border:1px solid #E9ECEF;border-radius:8px"></iframe>
+      </div>
+      <div style="margin-top:0.75rem;display:flex;gap:8px;align-items:center">
+        <button id="contrastCheck" class="btn">Check contrast</button>
+        <div id="contrastResult" style="color:#6C757D"></div>
+        <button id="autoFix" class="btn" style="margin-left:auto">Auto-fix</button>
+      </div>
+      <h2 style="margin-top:1rem">Testcases</h2>
+      <p>Voorbeelden en notities voor het testen met schermlezers en toetsenbordnavigatie.</p>
+    </div>
+  </div>
+  <script>
+    // Accessibility controls page script (synchronized with embedded layout handlers)
+    (function(){
+      function notifyPreview(){ var fr = document.getElementById('previewFrameLocal'); try{ fr.contentWindow.location.reload(); }catch(e){ if(fr) fr.src = fr.src; } }
+      function setContrast(on){ try{ localStorage.setItem('soyou_high_contrast', on ? '1' : '0'); }catch(e){} document.body.classList.toggle('high-contrast', on); notifyPreview(); }
+      function setFontSize(size){ try{ localStorage.setItem('soyou_font_size', String(size)); }catch(e){} document.body.style.fontSize = size + 'px'; notifyPreview(); }
+      function setTTS(on){ try{ localStorage.setItem('soyou_tts', on ? '1' : '0'); }catch(e){} notifyPreview(); }
+      function setVK(on){ try{ localStorage.setItem('soyou_vk', on ? '1' : '0'); }catch(e){} notifyPreview(); }
+
+      function setTheme(idx){ var themes = ['minimal','default','rich','maximal']; var t = themes[idx]||'minimal'; try{ localStorage.setItem('soyou_theme', t); }catch(e){} var lbl=document.getElementById('themeLabelLocal'); if(lbl) lbl.textContent = t.charAt(0).toUpperCase()+t.slice(1); notifyPreview(); }
+      function setFont(f){ try{ localStorage.setItem('soyou_font', f); }catch(e){} notifyPreview(); }
+      function setVKScale(v){ try{ localStorage.setItem('vk_scale', String(v)); }catch(e){} notifyPreview(); }
+      function setVKLayout(l){ try{ localStorage.setItem('vk_layout', l); }catch(e){} notifyPreview(); }
+
+      // init values
+      var hc = localStorage.getItem('soyou_high_contrast')==='1';
+      var fs = parseFloat(localStorage.getItem('soyou_font_size')) || 16;
+      document.body.classList.toggle('high-contrast', hc);
+      document.body.style.fontSize = fs + 'px';
+      var theme = localStorage.getItem('soyou_theme') || 'minimal';
+      var themeIndex = ['minimal','default','rich','maximal'].indexOf(theme); if(themeIndex<0) themeIndex = 0;
+      var themeRange = document.getElementById('themeRangeLocal'); if(themeRange){ themeRange.value = themeIndex; var lbl=document.getElementById('themeLabelLocal'); if(lbl) lbl.textContent = theme.charAt(0).toUpperCase()+theme.slice(1); themeRange.addEventListener('input', function(){ setTheme(parseInt(this.value,10)); }); }
+      var font = localStorage.getItem('soyou_font') || "Inter, system-ui, sans-serif"; var fontSel = document.getElementById('fontSelectLocal'); if(fontSel){ fontSel.value = font; fontSel.addEventListener('change', function(){ setFont(this.value); }); }
+      var vkScale = parseFloat(localStorage.getItem('vk_scale')) || 1;
+      var vkLayout = localStorage.getItem('vk_layout') || 'qwerty';
+      try{ var r = document.querySelector('input[name="vkLayoutLocal"][value="'+vkLayout+'"]'); if(r) r.checked=true; }catch(e){}
+
+      var vkDec = document.getElementById('vkDecLocal'), vkInc = document.getElementById('vkIncLocal');
+      if(vkInc && vkDec){ vkInc.addEventListener('click', function(){ vkScale = Math.min(1.5, +(vkScale+0.1).toFixed(2)); setVKScale(vkScale); }); vkDec.addEventListener('click', function(){ vkScale = Math.max(0.6, +(vkScale-0.1).toFixed(2)); setVKScale(vkScale); }); }
+
+      try{ var vkQ = document.getElementById('vkQLocal'), vkA = document.getElementById('vkALocal'), vkD = document.getElementById('vkDLocal'); if(vkQ) vkQ.addEventListener('change', function(){ if(this.checked) setVKLayout('qwerty'); }); if(vkA) vkA.addEventListener('change', function(){ if(this.checked) setVKLayout('azerty'); }); if(vkD) vkD.addEventListener('change', function(){ if(this.checked) setVKLayout('dvorak'); }); }catch(e){}
+
+      var toggleContrast = document.getElementById('toggleContrastLocal'); if(toggleContrast) toggleContrast.addEventListener('click', function(){ hc = !hc; setContrast(hc); });
+      var toggleTTS = document.getElementById('toggleTTSLocal'); if(toggleTTS) toggleTTS.addEventListener('click', function(){ var ok = localStorage.getItem('soyou_tts')!=='1'; setTTS(ok); });
+      var toggleVK = document.getElementById('toggleVKLocal'); if(toggleVK) toggleVK.addEventListener('click', function(){ var ok = localStorage.getItem('soyou_vk')!=='1'; setVK(ok); });
+
+      // Contrast utilities (copied from existing implementation)
+      function hexToRgb(hex){ if(!hex) return null; hex = hex.replace('#',''); if(hex.length===3) hex = hex.split('').map(h=>h+h).join(''); var num = parseInt(hex,16); return {r:(num>>16)&255,g:(num>>8)&255,b:num&255}; }
+      function srgbToLin(c){ c = c/255; return c<=0.03928? c/12.92 : Math.pow((c+0.055)/1.055,2.4); }
+      function luminance(hex){ var v = hexToRgb(hex); if(!v) return 0; return 0.2126*srgbToLin(v.r)+0.7152*srgbToLin(v.g)+0.0722*srgbToLin(v.b); }
+      function contrastRatio(a,b){ var L1=luminance(a), L2=luminance(b); var big=Math.max(L1,L2), small=Math.min(L1,L2); return +( (big+0.05)/(small+0.05) ).toFixed(2); }
+
+      function getThemeColors(theme){
+        var map = {
+          minimal: {bg:'#FBFCFD', fg:'#1f2d3d', hero:'#111827', heroText:'#FFFFFF', accent:'#6B7FD7'},
+          default: {bg:'#F7FAFC', fg:'#0f172a', hero:'#0b1220', heroText:'#eef6ff', accent:'#2563eb'},
+          rich: {bg:'#071028', fg:'#E6EEF8', hero:'#071028', heroText:'#fff7e6', accent:'#ffb020'},
+          maximal: {bg:'#fff7f0', fg:'#1f2937', hero:'#fff7f0', heroText:'#1f2937', accent:'#8b5cf6'}
+        };
+        return map[theme] || map.minimal;
+      }
+
+      var contrastCheck = document.getElementById('contrastCheckLocal'), contrastResult = document.getElementById('contrastResultLocal');
+      if(contrastCheck){ contrastCheck.addEventListener('click', function(){ var theme = localStorage.getItem('soyou_theme')||'minimal'; var cols = getThemeColors(theme); var r1 = contrastRatio(cols.fg, cols.bg); var r2 = contrastRatio(cols.heroText, cols.hero); var r3 = contrastRatio('#FFFFFF', cols.accent); var out=[]; out.push('Body text / background: '+r1+(r1>=4.5? ' ✅':' ⚠️ (needs ≥4.5)')); out.push('Hero text / hero bg: '+r2+(r2>=4.5? ' ✅':' ⚠️ (needs ≥4.5)')); out.push('Button text / accent: '+r3+(r3>=4.5? ' ✅':' ⚠️ (needs ≥4.5)')); if(contrastResult) contrastResult.textContent = out.join('  •  '); }); }
+
+      var autoFix = document.getElementById('autoFixLocal');
+      if(autoFix){ autoFix.addEventListener('click', function(){ var theme = localStorage.getItem('soyou_theme')||'minimal'; var cols = getThemeColors(theme); var base = cols.accent; var t=0; var fixed=base; function hexToRgbLocal(hex){ if(!hex) return null; hex=hex.replace('#',''); if(hex.length===3) hex=hex.split('').map(h=>h+h).join(''); var num=parseInt(hex,16); return {r:(num>>16)&255,g:(num>>8)&255,b:num&255}; } function clampHex(v){ v=Math.round(v); v=Math.max(0,Math.min(255,v)); var s=v.toString(16); return s.length===1? '0'+s : s; } function rgbToHex(r,g,b){ return '#'+clampHex(r)+clampHex(g)+clampHex(b); } function hexMix(hex,toward,tt){ var a=hexToRgbLocal(hex), b=hexToRgbLocal(toward); if(!a||!b) return hex; return rgbToHex(a.r+(b.r-a.r)*tt, a.g+(b.g-a.g)*tt, a.b+(b.b-a.b)*tt); } function luminanceLocal(hex){ var v=hexToRgbLocal(hex); if(!v) return 0; function srgbToLin(c){ c=c/255; return c<=0.03928? c/12.92 : Math.pow((c+0.055)/1.055,2.4);} return 0.2126*srgbToLin(v.r)+0.7152*srgbToLin(v.g)+0.0722*srgbToLin(v.b); } function contrastRatioLocal(a,b){ var L1=luminanceLocal(a), L2=luminanceLocal(b); var big=Math.max(L1,L2), small=Math.min(L1,L2); return (big+0.05)/(small+0.05); } var ratio = contrastRatioLocal('#FFFFFF', base); while(ratio < 4.5 && t < 1){ t += 0.06; fixed = hexMix(base, '#000000', t); ratio = contrastRatioLocal('#FFFFFF', fixed); } var fg = cols.fg, bg = cols.bg; var ratio2 = contrastRatioLocal(fg,bg); var fgFixed = fg; var tt=0; while(ratio2 < 4.5 && tt<1){ tt += 0.06; fgFixed = hexMix(fg,'#000000',tt); ratio2 = contrastRatioLocal(fgFixed,bg); } var overrides = {'--accent-start': fixed,'--accent-end': fixed,'--hero-text': cols.heroText,'--fg': fgFixed}; try{ localStorage.setItem('soyou_theme_overrides', JSON.stringify(overrides)); }catch(e){} notifyPreview(); if(contrastResult) contrastResult.textContent = 'Auto-fix applied — preview reloaded'; }); }
+    })();
+  </script>
+</body>
+</html>

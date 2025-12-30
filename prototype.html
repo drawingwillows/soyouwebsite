@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prototype — So You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--max:1100px;--accent:#6B7FD7}
+    html,body{height:100%;margin:0;font-family:'Inter',sans-serif;background:#F8F9FA;color:#2C3E50}
+    .wrap{max-width:var(--max);margin:3rem auto;padding:0 1.5rem}
+    h1,h2{font-family:'Raleway',sans-serif;color:#1A1A1A}
+    h1{font-size:2.4rem;margin-bottom:0.5rem}
+    h2{font-size:1.25rem;margin-top:1.5rem}
+    p{line-height:1.6;margin:0.6rem 0}
+    .card{background:white;padding:1.5rem;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .meta{color:#6C757D;font-size:0.9rem}
+    a.top{display:inline-block;margin-bottom:1rem;color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="top" href="index.html" data-i18n="back_home">← Terug naar home</a>
+    <div class="card">
+      <h1 data-i18n="prototype">Prototype</h1>
+      <p class="meta" data-i18n="placeholder_note">Pagina bevat placeholders — vervang teksten en secties met eigen content.</p>
+
+      <h2>Overzicht</h2>
+      <p>Een korte introductie van de prototype-ervaring. Gebruik dit tekstvak om doel, scope en notities te plaatsen.</p>
+
+      <h2>Secties</h2>
+      <h3>Stap 1 — Intro</h3>
+      <p>Placeholder-tekst voor de eerste sectie. Voeg richtext toe met <strong>vet</strong>, <em>cursief</em> en links waar nodig.</p>
+
+      <h2 style="margin-top:1.5rem">Embedded app (preview)</h2>
+      <div style="margin:0.5rem 0 1rem;display:flex;gap:8px;align-items:center">
+        <input id="embedUrl" placeholder="Cloudflare Pages URL (leave empty to use /app)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #E9ECEF" />
+        <button id="saveEmbed" class="btn">Save</button>
+        <button id="openEmbed" class="btn">Open</button>
+        <button id="fullscreenEmbed" class="btn">Fullscreen</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <iframe id="embedFrame" src="/app" style="width:100%;height:420px;border:0;display:block" title="Embedded app preview"></iframe>
+      </div>
+
+      <h3>Stap 2 — Interactie</h3>
+      <p>Plaats hier voorbeelden: vragen, keuzes, en verwachte gebruikersstroom.</p>
+
+      <h2>Opmerkingen</h2>
+      <ul>
+        <li>Titel placeholder</li>
+        <li>Tekst placeholder</li>
+        <li>Tussentitel placeholder</li>
+      </ul>
+    </div>
+  </div>
+  <script src="i18n.js"></script>
+  <script>
+    (function(){
+      var input = document.getElementById('embedUrl');
+      var save = document.getElementById('saveEmbed');
+      var openBtn = document.getElementById('openEmbed');
+      var fullBtn = document.getElementById('fullscreenEmbed');
+      var frame = document.getElementById('embedFrame');
+      try{ input.value = localStorage.getItem('cloudflare_app_url') || ''; }catch(e){}
+      function setSrc(){ var v = (input.value||'').trim(); if(v){ frame.src = v; } else { frame.src = '/app'; } }
+      setSrc();
+      save && save.addEventListener('click', function(){ var v=(input.value||'').trim(); try{ localStorage.setItem('cloudflare_app_url', v); }catch(e){} setSrc(); alert('Saved embed URL'); });
+      openBtn && openBtn.addEventListener('click', function(){ var v=(input.value||'').trim(); if(!v) window.open('/app','_blank'); else window.open(v,'_blank'); });
+      fullBtn && fullBtn.addEventListener('click', function(){
+        try{
+          if(frame.requestFullscreen) frame.requestFullscreen(); else if(frame.webkitRequestFullscreen) frame.webkitRequestFullscreen(); else alert('Fullscreen not supported');
+        }catch(e){ alert('Could not enter fullscreen'); }
+      });
+    })();
+  </script>
+</body>
+</html>

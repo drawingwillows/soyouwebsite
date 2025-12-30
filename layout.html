@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So You - Discover Your Passion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root{
+            --bg: #F8F9FA;
+            --fg: #2C3E50;
+            --muted: #6C757D;
+            --accent-start: #6B7FD7;
+            --accent-end: #A8B5E8;
+            --card: #FFFFFF;
+            --hero-bg: #1A1A1A;
+            --hero-text: #FFFFFF;
+            --hover: #F8F9FA;
+        }
+
+        :root[data-theme='minimal']{
+            --bg: #FBFCFD;
+            --fg: #1f2d3d;
+            --muted: #6C757D;
+            --accent-start: #6B7FD7;
+            --accent-end: #A8B5E8;
+            --card: #FFFFFF;
+            --hero-bg: #111827;
+            --hero-text: #FFFFFF;
+            --hover: #F8F9FA;
+        }
+
+        :root[data-theme='default']{
+            --bg: #F7FAFC;
+            --fg: #0f172a;
+            --muted: #596275;
+            --accent-start: #2563eb;
+            --accent-end: #60a5fa;
+            --card: #FFFFFF;
+            --hero-bg: #0b1220;
+            --hero-text: #eef6ff;
+            --hover: #EEF6FF;
+        }
+
+        :root[data-theme='rich']{
+            --bg: #071028;
+            --fg: #E6EEF8;
+            --muted: #9fb0c8;
+            --accent-start: #ffb020;
+            --accent-end: #ff8a3d;
+            --card: #071028;
+            --hero-bg: linear-gradient(90deg,#071028,#0b1220);
+            --hero-text: #fff7e6;
+            --hover: rgba(255,176,32,0.06);
+        }
+
+        :root[data-theme='maximal']{
+            --bg: linear-gradient(135deg,#f6f0ff,#fff7f0);
+            --fg: #1f2937;
+            --muted: #475569;
+            --accent-start: #8b5cf6;
+            --accent-end: #f472b6;
+            --card: #fffaf0;
+            --hero-bg: linear-gradient(90deg,#fff7f0,#f6f0ff);
+            --hero-text: #1f2937;
+            --hover: rgba(139,92,246,0.06);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--fg);
+            background: var(--bg);
+            padding-bottom: 80px;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+            body.sidebar-collapsed {
+                margin-left: 60px;
+            }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+
+            .sidebar.collapsed {
+                width: 60px;
+            }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #E9ECEF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #1A1A1A;
+            white-space: nowrap;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6C757D;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+            .sidebar-toggle:hover {
+                background: #F8F9FA;
+            }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #6C757D;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #2C3E50;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+            .sidebar-link:hover {
+                background: #F8F9FA;
+                color: #6B7FD7;
+            }
+
+            .sidebar-link.active {
+                background: #6B7FD7;
+                color: white;
+            }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-text {
+            flex: 1;
+        }
+
+        .collapsed .sidebar-text,
+        .collapsed .sidebar-section-title,
+        .collapsed .sidebar-logo {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .collapsed .sidebar-link {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        .collapsed .sidebar-icon {
+            margin-right: 0;
+        }
+
+        /* Accessibility Controls */
+        .accessibility-controls {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            z-index: 999;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            transition: left 0.3s ease;
+        }
+
+        body.sidebar-collapsed .accessibility-controls {
+            left: 80px;
+        }
+
+        .control-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #6B7FD7;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+            .control-btn:last-child {
+                margin-bottom: 0;
+            }
+
+            .control-btn:hover {
+                transform: scale(1.05);
+                background: #5a6bc5;
+            }
+
+            .control-btn:focus {
+                outline: 3px solid #6B7FD7;
+                outline-offset: 3px;
+            }
+
+            /* Accessibility helper styles */
+            body.high-contrast { background: #0b1220; color: #eef6ff; }
+            body.high-contrast .hero { background: #071028; }
+            body.high-contrast .btn { background: #2b5bb7; }
+            body.large-font { font-size: 18px; }
+
+        /* Hero Section - Intentional WCAG Break */
+        .hero {
+            background: var(--hero-bg);
+            width: 100%;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+            .hero h1 {
+                    font-family: 'Raleway', sans-serif;
+                    font-weight: 800;
+                    font-size: clamp(4rem, 12vw, 8rem);
+                    color: var(--hero-text);
+                    letter-spacing: 0.05em;
+                    margin: 0;
+                    opacity: 0;
+                    animation: fadeIn 2s ease-in forwards;
+                }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hero-line {
+            width: 80%;
+            max-width: 600px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 1rem auto 0;
+        }
+
+        /* Standard Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 5rem 0;
+        }
+
+            .section.first {
+                padding-top: 4rem;
+            }
+
+        /* Typography */
+        h2 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #1A1A1A;
+        }
+
+        h3 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2C3E50;
+        }
+
+        .subheading {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #6C757D;
+            margin-bottom: 2rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+            ul li {
+                margin-bottom: 1rem;
+                padding-left: 1.5rem;
+                position: relative;
+            }
+
+                ul li:before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: #6B7FD7;
+                    font-weight: bold;
+                }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 24px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+            .btn:hover {
+                transform: scale(1.02);
+                box-shadow: 0 4px 12px rgba(107, 127, 215, 0.4);
+            }
+
+            .btn:focus {
+                outline: 3px solid #6B7FD7;
+                outline-offset: 3px;
+            }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* App Embed Container */
+        .app-embed {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 3rem 0;
+            min-height: 600px;
+        }
+
+            .app-embed iframe {
+                width: 100%;
+                height: 600px;
+                border: none;
+                border-radius: 12px;
+            }
+
+        /* Document Links */
+        .doc-link {
+            display: block;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            color: #2C3E50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .doc-link:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .doc-link h3 {
+                margin-bottom: 0.5rem;
+            }
+
+            .doc-link p {
+                margin: 0;
+                color: #6C757D;
+                font-size: 0.9rem;
+            }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 48px;
+            left: 280px;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            z-index: 998;
+            transition: left 0.3s ease;
+        }
+
+        body.sidebar-collapsed .bottom-nav {
+            left: 60px;
+        }
+
+        /* Footer */
+        .site-footer {
+            position: fixed;
+            bottom: 0;
+            left: 280px;
+            right: 0;
+            height: 48px;
+            background: white;
+            border-top: 1px solid #E9ECEF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            z-index: 997;
+            font-size: 0.9rem;
+            color: #6C757D;
+        }
+
+        body.sidebar-collapsed .site-footer{ left: 60px; }
+
+        .site-footer a{ color: #6B7FD7; text-decoration: none; margin-left: 0.75rem }
+        .site-footer a:hover{ text-decoration: underline }
+
+        .bottom-nav nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-nav a {
+            text-decoration: none;
+            color: #6C757D;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+            .bottom-nav a:hover,
+            .bottom-nav a.active {
+                background: #6B7FD7;
+                color: white;
+            }
+
+            .bottom-nav a:focus {
+                outline: 3px solid #6B7FD7;
+                outline-offset: 3px;
+            }
+
+        /* Page Sections */
+        .page {
+            display: none;
+        }
+
+            .page.active {
+                display: block;
+            }
+
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+            .login-box h2 {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: #2C3E50;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #E9ECEF;
+                border-radius: 12px;
+                font-size: 1rem;
+                transition: border-color 0.2s;
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #6B7FD7;
+                }
+
+        /* Accessibility cards */
+        .accessibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .accessibility-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+            .accessibility-card h3 {
+                color: #6B7FD7;
+                margin-bottom: 1rem;
+            }
+
+        /* Content Sections */
+        .content-section {
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .feedback-box {
+            background: #F8F9FA;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #E9ECEF;
+        }
+
+            .language-selector select {
+                width: 100%;
+                padding: 0.75rem;
+                border: 2px solid #E9ECEF;
+                border-radius: 12px;
+                font-size: 1rem;
+                background: white;
+                cursor: pointer;
+            }
+
+        /* Virtual Keyboard */
+        .virtual-keyboard {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            max-width: 800px;
+            width: 90%;
+        }
+
+            .virtual-keyboard.active {
+                display: block;
+            }
+
+        .keyboard-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            justify-content: center;
+        }
+
+        .keyboard-key {
+            padding: 1rem;
+            background: #F8F9FA;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            min-width: 50px;
+            transition: background 0.2s;
+        }
+
+            .keyboard-key:hover {
+                background: #E9ECEF;
+            }
+
+            .keyboard-key.space {
+                flex: 1;
+            }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                margin-left: 0;
+                padding-top: 60px;
+            }
+
+                body.sidebar-collapsed {
+                    margin-left: 0;
+                }
+
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                bottom: auto;
+            }
+
+                .sidebar.collapsed {
+                    width: 100%;
+                }
+
+            .sidebar-header {
+                padding: 1rem;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0;
+            }
+
+            .sidebar-section {
+                margin: 0;
+                display: flex;
+            }
+
+            .sidebar-section-title {
+                display: none;
+            }
+
+            .bottom-nav {
+                left: 0;
+            }
+
+            body.sidebar-collapsed .bottom-nav {
+                left: 0;
+            }
+
+            .accessibility-controls {
+                bottom: 100px;
+                left: 10px;
+            }
+
+            body.sidebar-collapsed .accessibility-controls {
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script src="i18n.js"></script>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo" data-i18n="logo">SO YOU</div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                <span id="toggleIcon">←</span>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="index.html" class="sidebar-link active" data-page="home">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="sidebar-text" data-i18n="home">Home</span>
+                </a>
+                <a href="prototype.html" class="sidebar-link" data-page="prototype">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span class="sidebar-text" data-i18n="prototype">Prototype</span>
+                </a>
+                <a href="about.html" class="sidebar-link" data-page="about">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="sidebar-text" data-i18n="about">About</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Resources</div>
+                <a href="documents.html" class="sidebar-link" data-page="documents">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="sidebar-text" data-i18n="documents">Documents</span>
+                </a>
+                <a href="accessibility.html" class="sidebar-link" data-page="accessibility">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span class="sidebar-text" data-i18n="accessibility">Accessibility</span>
+                </a>
+                <a href="sources.html" class="sidebar-link" data-page="sources">
+                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span class="sidebar-text" data-i18n="sources">Sources</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="language-selector">
+            <select id="languageSelect" aria-label="Select language">
+                <option value="en">English</option>
+                <option value="nl">Nederlands</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+            </select>
+        </div>
+    </aside>
+
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls">
+        <button class="control-btn" id="settingsBtn" data-i18n-title="settings_button_title">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+                <circle cx="12" cy="12" r="9" stroke-width="2" />
+            </svg>
+        </button>
+        <button class="control-btn" id="ttsBtn" data-i18n-title="tts_label">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+        </button>
+        <button class="control-btn" id="keyboardBtn" data-i18n-title="virtual_keyboard_label">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        </button>
+        <button class="control-btn" id="loginBtn" aria-label="Login" title="Login">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Virtual Keyboard (dynamic) -->
+    <div class="virtual-keyboard" id="virtualKeyboard" aria-hidden="true">
+        <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:8px">
+            <button id="vkMinus" class="btn" title="Smaller keyboard">-</button>
+            <div style="color:#6C757D">Keyboard scale</div>
+            <button id="vkPlus" class="btn" title="Bigger keyboard">+</button>
+            <div style="width:12px"></div>
+            <label for="vkLayout" style="color:#6C757D">Layout</label>
+            <select id="vkLayout" aria-label="Choose keyboard layout">
+                <option value="qwerty">QWERTY</option>
+                <option value="azerty">AZERTY</option>
+                <option value="dvorak">DVORAK</option>
+            </select>
+        </div>
+        <div id="vkKeys"></div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page" id="login">
+        <div class="login-container">
+            <div class="login-box">
+                <h2>Login to So You</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" data-i18n="email_label">Email</label>
+                        <input type="email" id="email" name="email" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" data-i18n="password_label">Password</label>
+                        <input type="password" id="password" name="password" placeholder="" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;" data-i18n="login_button">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Page -->
+    <div class="page active" id="home">
+        <div class="hero">
+            <h1 data-i18n="hero_title">SO YOU</h1>
+            <div class="hero-line"></div>
+        </div>
+
+        <div class="container">
+            <section class="section first">
+                <p class="subheading" data-i18n="subheading">Discover what energizes you—and find your place in Ghent's student community.</p>
+                <p>So You is a prototype app designed to help students from UGent, Artevelde, and HOGENT explore their passions and connect with student associations that match their interests. Whether you're curious about tech, sports, culture, activism, or something entirely different, So You helps you discover what excites you and where you belong.</p>
+                <a href="prototype.html" class="btn" data-page="prototype" data-i18n="try_proto">→ Try the Prototype</a>
+            </section>
+
+            <section class="section">
+                <h2 data-i18n="built_for_you">Built for You</h2>
+                <p data-i18n="placeholder_note">We know that finding the right association can feel overwhelming. So You is designed with intention:</p>
+                <ul>
+                    <li data-i18n="built_list_1"></li>
+                    <li data-i18n="built_list_2"></li>
+                    <li data-i18n="built_list_3"></li>
+                    <li data-i18n="built_list_4"></li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2 data-i18n="what_you_can_do">What You Can Do</h2>
+                <div class="features">
+                    <div class="feature">
+                        <h3 data-i18n="feature1_title">Explore Your Interests</h3>
+                        <p data-i18n="feature1_text">Discover what genuinely excites and energizes you through guided exploration.</p>
+                    </div>
+                    <div class="feature">
+                        <h3 data-i18n="feature2_title">Find Your Match</h3>
+                        <p data-i18n="feature2_text">Connect with student associations across UGent, Artevelde, and HOGENT that align with your passions and curiosities.</p>
+                    </div>
+                    <div class="feature">
+                        <h3 data-i18n="feature3_title">Discover Patterns</h3>
+                        <p data-i18n="feature3_text">See themes emerge in what you're drawn to—helping you understand yourself better.</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="section">
+                <h2 data-i18n="get_started">Get Started</h2>
+                <p class="content-section" data-i18n="get_started_text">Add your content here for the prototype, documents, accessibility info, and sources. Click the sidebar links to view placeholder pages that you can replace later.</p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (simple placeholders) -->
+    <div class="bottom-nav" role="navigation" aria-label="Bottom navigation">
+        <nav>
+            <a href="index.html" class="sidebar-link" data-page="home"><span data-i18n="home">Home</span></a>
+            <a href="prototype.html" class="sidebar-link" data-page="prototype"><span data-i18n="prototype">Prototype</span></a>
+            <a href="documents.html" class="sidebar-link" data-page="documents"><span data-i18n="documents">Documents</span></a>
+            <a href="about.html" class="sidebar-link" data-page="about"><span data-i18n="about">About</span></a>
+        </nav>
+    </div>
+
+    <!-- Accessibility page (moved here so it appears inside main layout) -->
+    <div class="page" id="accessibility">
+        <div class="container">
+            <div class="content-section">
+                <h2>Accessibility</h2>
+                <p class="note">Hier kun je thema's, lettertypes en toetsenbordinstellingen kiezen en direct in de voorbeeldweergave bekijken.</p>
+
+                <h3>Settings</h3>
+                <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem">
+                    <label for="themeRangeLocal">Theme: <span id="themeLabelLocal">Minimal</span></label>
+                    <input id="themeRangeLocal" type="range" min="0" max="3" step="1" value="0" aria-valuetext="Minimal" />
+
+                    <label for="fontSelectLocal">Font</label>
+                    <select id="fontSelectLocal" aria-label="Choose site font">
+                        <option value="Inter, system-ui, sans-serif">Inter (interface)</option>
+                        <option value="'Roboto', system-ui, sans-serif">Roboto</option>
+                        <option value="'Merriweather', serif">Merriweather (serif)</option>
+                        <option value="'Open Sans', system-ui, sans-serif">Open Sans</option>
+                    </select>
+
+                    <div style="display:flex;gap:0.5rem;align-items:center">
+                        <div>Virtual keyboard scale</div>
+                        <button id="vkDecLocal" class="btn">-</button>
+                        <button id="vkIncLocal" class="btn">+</button>
+                        <div style="margin-left:0.5rem;color:#6C757D">(affects keyboard in header/footer preview)</div>
+                    </div>
+
+                    <div style="display:flex;gap:0.5rem;align-items:center">
+                        <label for="vkQLocal">QWERTY</label>
+                        <input id="vkQLocal" type="radio" name="vkLayoutLocal" value="qwerty" />
+                        <label for="vkALocal">AZERTY</label>
+                        <input id="vkALocal" type="radio" name="vkLayoutLocal" value="azerty" />
+                        <label for="vkDLocal">DVORAK</label>
+                        <input id="vkDLocal" type="radio" name="vkLayoutLocal" value="dvorak" />
+                    </div>
+
+                    <div style="display:flex;gap:0.5rem;align-items:center">
+                        <button id="toggleContrastLocal" class="btn">Toggle contrast</button>
+                        <button id="toggleTTSLocal" class="btn">Toggle TTS</button>
+                        <button id="toggleVKLocal" class="btn">Toggle virtual keyboard</button>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:1.5rem">Preview</h3>
+                <p class="note">Gebruik de voorbeeldweergave om te zien hoe de site er met jouw instellingen uitziet. Wijzigingen worden opgeslagen en toegepast in het voorbeeld.</p>
+                <div style="margin-top:1rem">
+                    <iframe id="previewFrameLocal" src="layout.html" title="Live preview" style="width:100%;height:420px;border:1px solid #E9ECEF;border-radius:8px"></iframe>
+                </div>
+                <div style="margin-top:0.75rem;display:flex;gap:8px;align-items:center">
+                    <button id="contrastCheckLocal" class="btn">Check contrast</button>
+                    <div id="contrastResultLocal" style="color:#6C757D"></div>
+                    <button id="autoFixLocal" class="btn" style="margin-left:auto">Auto-fix</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Site footer: contact & legal -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-left">
+            <strong>So You</strong>
+            <span style="margin-left:12px">&middot;</span>
+            <a href="mailto:contact@soyou.example" aria-label="Contact email">contact@soyou.example</a>
+            <span style="margin-left:8px;color:#CED4DA">|</span>
+            <a href="tel:+32123456789" style="margin-left:8px" aria-label="Phone">+32 12 34 56 789</a>
+        </div>
+        <div class="footer-right">
+            <a href="documents.html" aria-label="Privacy and Terms">Privacy & Terms</a>
+            <span style="margin-left:8px;color:#CED4DA">|</span>
+            <a href="about.html" style="margin-left:8px" aria-label="Legal">Legal</a>
+            <span style="margin-left:12px;color:#CED4DA">|</span>
+            <small style="margin-left:12px">© <span id="soyouYear"></span> So You — All rights reserved</small>
+        </div>
+    </footer>
+
+    <script>
+    (function(){
+        // Helpers
+        function $(sel, ctx){ return (ctx||document).querySelector(sel); }
+        function $all(sel, ctx){ return Array.from((ctx||document).querySelectorAll(sel)); }
+
+        // Page navigation: links with data-page
+        function showPage(id){
+            var pages = $all('.page');
+            pages.forEach(function(p){ p.classList.remove('active'); });
+            var target = document.getElementById(id);
+            if(!target){
+                // create placeholder page
+                target = document.createElement('div');
+                target.className = 'page active';
+                target.id = id;
+                target.innerHTML = '<div class="container"><section class="section"><h2>' + id.charAt(0).toUpperCase() + id.slice(1) + '</h2><p>Placeholder content for "' + id + '". Replace this with your real content.</p></section></div>';
+                document.body.appendChild(target);
+            } else {
+                target.classList.add('active');
+            }
+            // update active links
+            $all('[data-page]').forEach(function(a){
+                if(a.getAttribute('data-page')===id) a.classList.add('active'); else a.classList.remove('active');
+            });
+            // focus top of page for accessibility
+            window.scrollTo(0,0);
+        }
+
+        // Attach to data-page links
+        $all('[data-page]').forEach(function(a){
+            a.addEventListener('click', function(e){ e.preventDefault(); var id = a.getAttribute('data-page'); showPage(id); });
+        });
+
+        // Intercept generic anchors with href="#"
+        $all('a[href="#"]').forEach(function(a){ a.addEventListener('click', function(e){ e.preventDefault(); }); });
+
+        // Sidebar toggle
+        var sidebar = $('#sidebar');
+        var sidebarToggle = $('#sidebarToggle');
+        sidebarToggle && sidebarToggle.addEventListener('click', function(){
+            sidebar.classList.toggle('collapsed'); document.body.classList.toggle('sidebar-collapsed');
+            var icon = $('#toggleIcon'); if(icon) icon.textContent = sidebar.classList.contains('collapsed') ? '→' : '←';
+        });
+
+        // Virtual keyboard toggle and dynamic keyboard handling (persisted)
+        var vk = $('#virtualKeyboard');
+        var keyboardBtn = $('#keyboardBtn');
+        var vkKeys = $('#vkKeys');
+        var vkLayoutSel = $('#vkLayout');
+        var vkPlus = $('#vkPlus');
+        var vkMinus = $('#vkMinus');
+
+        var VK_LAYOUTS = {
+            qwerty: [
+                ['`','1','2','3','4','5','6','7','8','9','0','-','=','Backspace'],
+                ['Tab','q','w','e','r','t','y','u','i','o','p','[',']','\\'],
+                ['Caps','a','s','d','f','g','h','j','k','l',';','\'','Enter'],
+                ['Shift','z','x','c','v','b','n','m',',','.','/','Shift'],
+                ['Space']
+            ],
+            azerty: [
+                ['²','&','é','"','\'','(','-','è','_','ç','à',')','=','Backspace'],
+                ['Tab','a','z','e','r','t','y','u','i','o','p','^','$','*'],
+                ['Caps','q','s','d','f','g','h','j','k','l','m','ù','Enter'],
+                ['Shift','<','w','x','c','v','b','n',',',';',':','!','Shift'],
+                ['Space']
+            ],
+            dvorak: [
+                ['`','1','2','3','4','5','6','7','8','9','0','[',']','Backspace'],
+                ['Tab','\'',',','.','p','y','f','g','c','r','l','/','=','\\'],
+                ['Caps','a','o','e','u','i','d','h','t','n','s','-','Enter'],
+                ['Shift',';','q','j','k','x','b','m',',','.','/','Shift'],
+                ['Space']
+            ]
+        };
+
+        function getVKSetting(key, fallback){ try{ var v = localStorage.getItem(key); return v===null?fallback:v }catch(e){return fallback} }
+        var vkScale = parseFloat(getVKSetting('vk_scale', '1')) || 1;
+        var vkLayout = getVKSetting('vk_layout','qwerty') || 'qwerty';
+
+        function renderVK(){
+            vkKeys.innerHTML = '';
+            var rows = VK_LAYOUTS[vkLayout] || VK_LAYOUTS.qwerty;
+            rows.forEach(function(row){
+                var r = document.createElement('div'); r.className = 'keyboard-row';
+                row.forEach(function(k){
+                    var btn = document.createElement('button'); btn.className = 'keyboard-key';
+                    btn.textContent = k==='Space' ? 'Space' : k;
+                    if(k==='Space') btn.classList.add('space');
+                    btn.addEventListener('click', function(){ sendKey(k); });
+                    r.appendChild(btn);
+                });
+                vkKeys.appendChild(r);
+            });
+            if(vk){ vk.style.transform = 'scale(' + vkScale + ')'; }
+        }
+
+        function sendKey(k){
+            var active = document.activeElement; if(!active) return;
+            if(k==='Backspace' || k==='⌫'){ if(active.value!==undefined) active.value = active.value.slice(0,-1); active.focus(); return; }
+            if(k==='Tab'){ if(active.value!==undefined){ active.value += '\t'; active.focus(); } return; }
+            if(k==='Enter'){ if(active.tagName==='TEXTAREA') { active.value += '\n'; active.focus(); } else { active.form && active.form.requestSubmit && active.form.requestSubmit(); } return; }
+            if(k==='Space'){ if(active.value!==undefined) active.value += ' '; active.focus(); return; }
+            // default: insert character
+            if(active.value!==undefined){ active.value += k; active.focus(); }
+        }
+
+        keyboardBtn && keyboardBtn.addEventListener('click', function(){
+            if(!vk) return;
+            var active = vk.classList.toggle('active');
+            try{ localStorage.setItem('soyou_vk', active ? '1' : '0'); }catch(e){}
+        });
+
+        vkLayoutSel && (vkLayoutSel.value = vkLayout);
+        vkLayoutSel && vkLayoutSel.addEventListener('change', function(){ vkLayout = this.value; try{ localStorage.setItem('vk_layout', vkLayout); }catch(e){} renderVK(); });
+        vkPlus && vkPlus.addEventListener('click', function(){ vkScale = Math.min(1.5, +(vkScale + 0.1).toFixed(2)); try{ localStorage.setItem('vk_scale', String(vkScale)); }catch(e){} renderVK(); });
+        vkMinus && vkMinus.addEventListener('click', function(){ vkScale = Math.max(0.6, +(vkScale - 0.1).toFixed(2)); try{ localStorage.setItem('vk_scale', String(vkScale)); }catch(e){} renderVK(); });
+
+        // initialize
+        renderVK();
+
+        // Make virtual keyboard draggable and remember position
+        (function(){
+            var dragEl = vk; if(!dragEl) return;
+            var dragging = false, dragOffset = {x:0,y:0};
+            // restore position
+            try{
+                var pos = JSON.parse(localStorage.getItem('vk_pos')||'null');
+                if(pos && typeof pos.left==='number' && typeof pos.top==='number'){
+                    dragEl.style.left = (pos.left) + 'px';
+                    dragEl.style.top = (pos.top) + 'px';
+                    dragEl.style.transform = 'none';
+                }
+            }catch(e){}
+
+            dragEl.addEventListener('pointerdown', function(e){
+                // don't start drag when clicking a key
+                if(e.target.closest && e.target.closest('.keyboard-key')) return;
+                dragging = true; dragEl.setPointerCapture && dragEl.setPointerCapture(e.pointerId);
+                var r = dragEl.getBoundingClientRect(); dragOffset.x = e.clientX - r.left; dragOffset.y = e.clientY - r.top;
+                dragEl.style.transition = 'none';
+            });
+
+            document.addEventListener('pointermove', function(e){
+                if(!dragging) return;
+                var left = e.clientX - dragOffset.x; var top = e.clientY - dragOffset.y;
+                // clamp
+                left = Math.max(8, Math.min(window.innerWidth - dragEl.offsetWidth - 8, left));
+                top = Math.max(8, Math.min(window.innerHeight - dragEl.offsetHeight - 8, top));
+                dragEl.style.left = left + 'px'; dragEl.style.top = top + 'px'; dragEl.style.transform = 'none';
+            });
+
+            document.addEventListener('pointerup', function(e){
+                if(!dragging) return; dragging = false;
+                try{ localStorage.setItem('vk_pos', JSON.stringify({ left: parseInt(dragEl.style.left,10)||0, top: parseInt(dragEl.style.top,10)||0 })); }catch(er){}
+                try{ dragEl.releasePointerCapture && dragEl.releasePointerCapture(e.pointerId); }catch(_){}
+                dragEl.style.transition = '';
+            });
+        })();
+
+        // TTS: start/stop reading visible page main text
+        var ttsBtn = $('#ttsBtn');
+        ttsBtn && ttsBtn.addEventListener('click', function(){
+            if(!('speechSynthesis' in window)){ alert('Text-to-speech niet ondersteund in deze browser.'); return; }
+            if(speechSynthesis.speaking){ speechSynthesis.cancel(); return; }
+            var page = $('.page.active'); if(!page) return;
+            var text = page.innerText.replace(/\s+/g,' ').trim();
+            if(!text) return;
+            var ut = new SpeechSynthesisUtterance(text);
+            ut.onend = function(){ /* finished */ };
+            speechSynthesis.cancel(); speechSynthesis.speak(ut);
+        });
+
+        // Login button (accessibility control)
+        var loginBtn = $('#loginBtn');
+        loginBtn && loginBtn.addEventListener('click', function(){ showPage('login'); });
+
+        // Settings button: navigate to accessibility page
+        var settingsBtn = $('#settingsBtn');
+        settingsBtn && settingsBtn.addEventListener('click', function(){ window.location.href = 'accessibility.html'; });
+
+        // Apply persisted accessibility settings: numeric font-size, contrast, vk
+        function applyAccessibilitySettings(){
+            try{
+                var high = localStorage.getItem('soyou_high_contrast') === '1';
+                if(high) document.body.classList.add('high-contrast'); else document.body.classList.remove('high-contrast');
+
+                var fontSize = parseFloat(localStorage.getItem('soyou_font_size')) || 16;
+                if(fontSize && !isNaN(fontSize)) document.body.style.fontSize = fontSize + 'px'; else document.body.style.fontSize = '';
+
+                // theme and font
+                var theme = localStorage.getItem('soyou_theme');
+                if(theme) document.documentElement.dataset.theme = theme;
+                var font = localStorage.getItem('soyou_font');
+                if(font) document.body.style.fontFamily = font;
+                // apply any theme overrides (custom CSS variables) stored by accessibility tools
+                try{
+                    var overrides = localStorage.getItem('soyou_theme_overrides');
+                    if(overrides){
+                        var obj = JSON.parse(overrides);
+                        Object.keys(obj).forEach(function(k){ document.documentElement.style.setProperty(k, obj[k]); });
+                    }
+                }catch(e){console.warn('invalid theme overrides', e)}
+
+                // virtual keyboard visibility persisted
+                if(localStorage.getItem('soyou_vk')==='1') vk && vk.classList.add('active'); else vk && vk.classList.remove('active');
+            }catch(e){}
+        }
+
+        applyAccessibilitySettings();
+
+        // Accessibility page local handlers (for the embedded page inside layout)
+        (function(){
+            function notifyPreviewLocal(){ var fr = document.getElementById('previewFrameLocal'); try{ fr.contentWindow.location.reload(); }catch(e){ if(fr) fr.src = fr.src; } }
+
+            function setThemeLocal(idx){ var themes=['minimal','default','rich','maximal']; var t=themes[idx]||'minimal'; try{ localStorage.setItem('soyou_theme', t); }catch(e){} var el = document.getElementById('themeLabelLocal'); if(el) el.textContent = t.charAt(0).toUpperCase()+t.slice(1); notifyPreviewLocal(); }
+            function setFontLocal(f){ try{ localStorage.setItem('soyou_font', f); }catch(e){} notifyPreviewLocal(); }
+            function setVKScaleLocal(v){ try{ localStorage.setItem('vk_scale', String(v)); }catch(e){} notifyPreviewLocal(); }
+            function setVKLayoutLocal(l){ try{ localStorage.setItem('vk_layout', l); }catch(e){} notifyPreviewLocal(); }
+
+            try{
+                var hc = localStorage.getItem('soyou_high_contrast')==='1';
+                var fs = parseFloat(localStorage.getItem('soyou_font_size')) || 16;
+                document.body.classList.toggle('high-contrast', hc);
+                document.body.style.fontSize = fs + 'px';
+            }catch(e){}
+
+            try{
+                var theme = localStorage.getItem('soyou_theme')||'minimal';
+                var idx = ['minimal','default','rich','maximal'].indexOf(theme); if(idx<0) idx=0;
+                var themeRange = document.getElementById('themeRangeLocal'); if(themeRange){ themeRange.value = idx; var lbl=document.getElementById('themeLabelLocal'); if(lbl) lbl.textContent = theme.charAt(0).toUpperCase()+theme.slice(1); themeRange.addEventListener('input', function(){ setThemeLocal(parseInt(this.value,10)); }); }
+
+                var font = localStorage.getItem('soyou_font') || "Inter, system-ui, sans-serif"; var fontSel = document.getElementById('fontSelectLocal'); if(fontSel){ fontSel.value = font; fontSel.addEventListener('change', function(){ setFontLocal(this.value); }); }
+
+                var vkScale = parseFloat(localStorage.getItem('vk_scale')) || 1;
+                var vkDec = document.getElementById('vkDecLocal'), vkInc = document.getElementById('vkIncLocal');
+                if(vkInc && vkDec){ vkInc.addEventListener('click', function(){ vkScale = Math.min(1.5, +(vkScale+0.1).toFixed(2)); setVKScaleLocal(vkScale); }); vkDec.addEventListener('click', function(){ vkScale = Math.max(0.6, +(vkScale-0.1).toFixed(2)); setVKScaleLocal(vkScale); }); }
+
+                var vkLayout = localStorage.getItem('vk_layout') || 'qwerty';
+                try{ var el = document.querySelector('input[name="vkLayoutLocal"][value="'+vkLayout+'"]'); if(el) el.checked=true; }catch(e){}
+                var vkQ = document.getElementById('vkQLocal'), vkA = document.getElementById('vkALocal'), vkD = document.getElementById('vkDLocal');
+                if(vkQ) vkQ.addEventListener('change', function(){ if(this.checked) setVKLayoutLocal('qwerty'); });
+                if(vkA) vkA.addEventListener('change', function(){ if(this.checked) setVKLayoutLocal('azerty'); });
+                if(vkD) vkD.addEventListener('change', function(){ if(this.checked) setVKLayoutLocal('dvorak'); });
+
+                var toggleContrast = document.getElementById('toggleContrastLocal'); if(toggleContrast) toggleContrast.addEventListener('click', function(){ var ok = localStorage.getItem('soyou_high_contrast')!=='1'; try{ localStorage.setItem('soyou_high_contrast', ok?'1':'0'); }catch(e){} document.body.classList.toggle('high-contrast', ok); notifyPreviewLocal(); });
+                var toggleTTS = document.getElementById('toggleTTSLocal'); if(toggleTTS) toggleTTS.addEventListener('click', function(){ var ok = localStorage.getItem('soyou_tts')!=='1'; try{ localStorage.setItem('soyou_tts', ok?'1':'0'); }catch(e){} notifyPreviewLocal(); });
+                var toggleVK = document.getElementById('toggleVKLocal'); if(toggleVK) toggleVK.addEventListener('click', function(){ var ok = localStorage.getItem('soyou_vk')!=='1'; try{ localStorage.setItem('soyou_vk', ok?'1':'0'); }catch(e){} notifyPreviewLocal(); });
+
+                // contrast check and autofix (local)
+                var contrastCheck = document.getElementById('contrastCheckLocal'), contrastResult = document.getElementById('contrastResultLocal');
+                if(contrastCheck){ contrastCheck.addEventListener('click', function(){ var th = localStorage.getItem('soyou_theme')||'minimal'; var cols = (function(theme){ var map={ minimal:{bg:'#FBFCFD',fg:'#1f2d3d',hero:'#111827',heroText:'#FFFFFF',accent:'#6B7FD7'}, default:{bg:'#F7FAFC',fg:'#0f172a',hero:'#0b1220',heroText:'#eef6ff',accent:'#2563eb'}, rich:{bg:'#071028',fg:'#E6EEF8',hero:'#071028',heroText:'#fff7e6',accent:'#ffb020'}, maximal:{bg:'#fff7f0',fg:'#1f2937',hero:'#fff7f0',heroText:'#1f2937',accent:'#8b5cf6'} }; return map[theme]||map.minimal; })(th);
+                    var r1 = contrastRatio(cols.fg, cols.bg); var r2 = contrastRatio(cols.heroText, cols.hero); var r3 = contrastRatio('#FFFFFF', cols.accent);
+                    var out=[]; out.push('Body text / background: '+r1+(r1>=4.5? ' ✅':' ⚠️ (needs ≥4.5)')); out.push('Hero text / hero bg: '+r2+(r2>=4.5? ' ✅':' ⚠️ (needs ≥4.5)')); out.push('Button text / accent: '+r3+(r3>=4.5? ' ✅':' ⚠️ (needs ≥4.5)')); if(contrastResult) contrastResult.textContent = out.join('  •  ');
+                }); }
+
+                var autoFix = document.getElementById('autoFixLocal'); if(autoFix){ autoFix.addEventListener('click', function(){ var th = localStorage.getItem('soyou_theme')||'minimal'; var cols = (function(theme){ var map={ minimal:{bg:'#FBFCFD',fg:'#1f2d3d',hero:'#111827',heroText:'#FFFFFF',accent:'#6B7FD7'}, default:{bg:'#F7FAFC',fg:'#0f172a',hero:'#0b1220',heroText:'#eef6ff',accent:'#2563eb'}, rich:{bg:'#071028',fg:'#E6EEF8',hero:'#071028',heroText:'#fff7e6',accent:'#ffb020'}, maximal:{bg:'#fff7f0',fg:'#1f2937',hero:'#fff7f0',heroText:'#1f2937',accent:'#8b5cf6'} }; return map[theme]||map.minimal; })(th);
+                    var base = cols.accent; var t=0; var fixed=base; function hexToRgbLocal(hex){ if(!hex) return null; hex=hex.replace('#',''); if(hex.length===3) hex=hex.split('').map(h=>h+h).join(''); var num=parseInt(hex,16); return {r:(num>>16)&255,g:(num>>8)&255,b:num&255}; }
+                    function clampHex(v){ v=Math.round(v); v=Math.max(0,Math.min(255,v)); var s=v.toString(16); return s.length===1? '0'+s : s; }
+                    function rgbToHex(r,g,b){ return '#'+clampHex(r)+clampHex(g)+clampHex(b); }
+                    function hexMix(hex,toward,tt){ var a=hexToRgbLocal(hex), b=hexToRgbLocal(toward); if(!a||!b) return hex; return rgbToHex(a.r+(b.r-a.r)*tt, a.g+(b.g-a.g)*tt, a.b+(b.b-a.b)*tt); }
+                    function luminanceLocal(hex){ var v=hexToRgbLocal(hex); if(!v) return 0; function srgbToLin(c){ c=c/255; return c<=0.03928? c/12.92 : Math.pow((c+0.055)/1.055,2.4);} return 0.2126*srgbToLin(v.r)+0.7152*srgbToLin(v.g)+0.0722*srgbToLin(v.b); }
+                    function contrastRatioLocal(a,b){ var L1=luminanceLocal(a), L2=luminanceLocal(b); var big=Math.max(L1,L2), small=Math.min(L1,L2); return (big+0.05)/(small+0.05); }
+                    var ratio = contrastRatioLocal('#FFFFFF', base); while(ratio < 4.5 && t < 1){ t += 0.06; fixed = hexMix(base, '#000000', t); ratio = contrastRatioLocal('#FFFFFF', fixed); }
+                    var fg = cols.fg, bg = cols.bg; var ratio2 = contrastRatioLocal(fg,bg); var fgFixed = fg; var tt=0; while(ratio2 < 4.5 && tt<1){ tt += 0.06; fgFixed = hexMix(fg,'#000000',tt); ratio2 = contrastRatioLocal(fgFixed,bg); }
+                    var overrides = {'--accent-start': fixed,'--accent-end': fixed,'--hero-text': cols.heroText,'--fg': fgFixed}; try{ localStorage.setItem('soyou_theme_overrides', JSON.stringify(overrides)); }catch(e){}
+                    notifyPreviewLocal(); if(contrastResult) contrastResult.textContent = 'Auto-fix applied — preview reloaded';
+                }); }
+            }catch(e){ console.warn('accessibility local init error', e); }
+        })();
+
+        // Mock login handler (uses i18n.t)
+        var loginForm = $('#loginForm');
+        if(loginForm){
+            loginForm.addEventListener('submit', function(e){
+                e.preventDefault();
+                var email = (document.getElementById('email')||{}).value || '';
+                var pass = (document.getElementById('password')||{}).value || '';
+                if(!email || !pass){ alert(window.t('fill_credentials')); return; }
+                // mock auth: accept any credentials
+                try{ localStorage.setItem('soyou_user', email); }catch(err){}
+                alert(window.t('logged_in', {email: email}));
+                showPage('home');
+            });
+        }
+
+        // Language selector
+        var langSel = $('#languageSelect');
+        langSel && langSel.addEventListener('change', function(){ document.documentElement.lang = this.value; });
+
+        // On load: ensure at least home is visible
+        document.addEventListener('DOMContentLoaded', function(){
+            if(!$('.page.active')) showPage('home');
+            // set footer year
+            try{ document.getElementById('soyouYear').textContent = new Date().getFullYear(); }catch(e){}
+        });
+    })();
+    </script>
+
+</body>
+</html>
